@@ -1,0 +1,200 @@
+version: 2
+
+models:
+  - name: categories_stg
+    description: "Categories staging table"
+    columns:
+      - name: _id
+        description: "Primary key"
+        tests:
+          - not_null
+          - unique
+      - name: _data
+        description: "Raw JSON data column"
+
+  - name: cdata_bi_annual_forecast_stg
+    description: "Cdata bi annual forecast staging table"
+    columns:
+      - name: _id
+        description: "Primary key"
+        tests:
+          - not_null
+          - unique
+      - name: _data
+        description: "Raw JSON data column"
+
+  - name: cdata_bi_annual_stg
+    description: "Cdata bi annual staging table"
+    columns:
+      - name: _id
+        description: "Primary key"
+        tests:
+          - not_null
+          - unique
+      - name: _data
+        description: "Raw JSON data column"
+
+  - name: cdata_month_forecast_stg
+    description: "Cdata month forecast staging table"
+    columns:
+      - name: _id
+        description: "Primary key"
+        tests:
+          - not_null
+          - unique
+      - name: _data
+        description: "Raw JSON data column"
+
+  - name: cdata_month_stg
+    description: "Cdata month staging table"
+    columns:
+      - name: _id
+        description: "Primary key"
+        tests:
+          - not_null
+          - unique
+      - name: _data
+        description: "Raw JSON data column"
+
+  - name: cdata_quarter_forecast_stg
+    description: "Cdata quarter forecast staging table"
+    columns:
+      - name: _id
+        description: "Primary key"
+        tests:
+          - not_null
+          - unique
+      - name: _data
+        description: "Raw JSON data column"
+
+  - name: cdata_quarter_stg
+    description: "Cdata quarter staging table"
+    columns:
+      - name: _id
+        description: "Primary key"
+        tests:
+          - not_null
+          - unique
+      - name: _data
+        description: "Raw JSON data column"
+
+  - name: cdata_stg
+    description: "Cdata staging table"
+    columns:
+      - name: _id
+        description: "Primary key"
+        tests:
+          - not_null
+          - unique
+      - name: _data
+        description: "Raw JSON data column"
+
+  - name: cdata_yearly_baseline_stg
+    description: "Cdata yearly baseline staging table"
+    columns:
+      - name: _id
+        description: "Primary key"
+        tests:
+          - not_null
+          - unique
+      - name: _data
+        description: "Raw JSON data column"
+
+  - name: cdata_yearly_forecast_stg
+    description: "Cdata yearly forecast staging table"
+    columns:
+      - name: _id
+        description: "Primary key"
+        tests:
+          - not_null
+          - unique
+      - name: _data
+        description: "Raw JSON data column"
+
+  - name: cdata_yearly_stg
+    description: "Cdata yearly staging table"
+    columns:
+      - name: _id
+        description: "Primary key"
+        tests:
+          - not_null
+          - unique
+      - name: _data
+        description: "Raw JSON data column"
+
+  - name: cdata_yearly_target_stg
+    description: "Cdata yearly target staging table"
+    columns:
+      - name: _id
+        description: "Primary key"
+        tests:
+          - not_null
+          - unique
+      - name: _data
+        description: "Raw JSON data column"
+
+  - name: companies_stg
+    description: "Companies staging table"
+    columns:
+      - name: _id
+        description: "Primary key"
+        tests:
+          - not_null
+          - unique
+      - name: _data
+        description: "Raw JSON data column"
+
+  - name: company_codes_stg
+    description: "Company codes staging table"
+    columns:
+      - name: _id
+        description: "Primary key"
+        tests:
+          - not_null
+          - unique
+      - name: _data
+        description: "Raw JSON data column"
+
+  - name: company_frameworks_stg
+    description: "Company frameworks staging table"
+    columns:
+      - name: _id
+        description: "Primary key"
+        tests:
+          - not_null
+          - unique
+      - name: _data
+        description: "Raw JSON data column"
+
+  - name: company_sites_stg
+    description: "Company sites staging table"
+    columns:
+      - name: _id
+        description: "Primary key"
+        tests:
+          - not_null
+          - unique
+      - name: _data
+        description: "Raw JSON data column"
+
+  - name: standard_codes_stg
+    description: "Standard codes staging table"
+    columns:
+      - name: _id
+        description: "Primary key"
+        tests:
+          - not_null
+          - unique
+      - name: _data
+        description: "Raw JSON data column"
+
+  - name: standards_stg
+    description: "Standards staging table"
+    columns:
+      - name: _id
+        description: "Primary key"
+        tests:
+          - not_null
+          - unique
+      - name: _data
+        description: "Raw JSON data column"
