@@ -117,9 +117,6 @@ select
     total_emissions,
     url,
     is_aggregated,
-    created_at,
-    updated_at,
-    record_inserted_at,
 
     -- Dimension level fields
     (dim_elem -> '_id' ->> '$oid')          as dimension_id,
@@ -144,6 +141,9 @@ select
 
     -- Children level fields (fully exploded)
     child_elem ->> 'technical_name'         as children_technical_name,
-    nullif(child_elem ->> 'value','')::numeric       as children_value
+    nullif(child_elem ->> 'value','')::numeric       as children_value,
+    created_at,
+    updated_at,
+    record_inserted_at
 
 from children_exploded

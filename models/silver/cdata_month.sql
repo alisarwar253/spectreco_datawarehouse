@@ -133,9 +133,6 @@ select
     rollup_emissions,
     rollup_qty,
     rollup_value,
-    rollup_processed_at,
-    created_at,
-    record_inserted_at,
 
     -- Dimension level
     dim_elem ->> 'dimension'        as dimension_code,
@@ -159,6 +156,10 @@ select
         child_detail_elem ->> 'emission'
     ) end as children_value,
     case when elem_type='detail' then child_detail_elem ->> 'key' end as details_key,
-    case when elem_type='detail' then child_detail_elem ->> 'value' end as details_value
+    case when elem_type='detail' then child_detail_elem ->> 'value' end as details_value,
+
+    rollup_processed_at,
+    created_at,
+    record_inserted_at
 
 from children_details_exploded

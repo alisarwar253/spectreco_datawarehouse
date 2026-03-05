@@ -131,12 +131,9 @@ select
     ref_table,
     is_forecast,
     rollup_processed,
-    rollup_processed_at,
     rollup_qty,
     rollup_value,
     rollup_emissions,
-    created_at,
-    record_inserted_at,
 
     -- dimension fields
     dim_elem ->> 'dimension'      as dimension_code,
@@ -155,6 +152,10 @@ select
 
     -- details
     detail_elem ->> 'key'   as details_key,
-    detail_elem ->> 'value' as details_value
+    detail_elem ->> 'value' as details_value,
+
+    rollup_processed_at,
+    created_at,
+    record_inserted_at
 
 from children_and_details_exploded
