@@ -13,13 +13,13 @@ parsed as (
 
     select
         _id,
-        (_data ->> 'code')::text as code,
+        _data ->> 'code' as code,
         _data ->> 'name' as name,
         _data ->> 'description' as description,
         (_data ->> 'status')::boolean as status,
         _data ->> 'type_detail' as type_detail,
         _data ->> 'type' as type,
-        (_data -> 'internal_code')::jsonb as internal_code,
+        ic.internal_code as internal_code,
         _data ->> 'function' as function,
         _data ->> 'custom_1' as custom_1,
         _data ->> 'custom_2' as custom_2,
@@ -30,6 +30,8 @@ parsed as (
         current_timestamp as record_inserted_at
 
     from source
+    -- explode the internal_code array
+    left join lateral jsonb_array_elements_text(_data -> 'internal_code') as ic(internal_code) on true
 
 )
 

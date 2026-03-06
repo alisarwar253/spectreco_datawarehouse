@@ -101,29 +101,20 @@ dimension_exploded as (
     ) t on true
 ),
 
--- explode children and details
-children_and_details_exploded as (
+children_exploded as (
     select
         d.*,
-        case when t.elem_type = 'child' then t.elem else null end as child_elem,
-        case when t.elem_type = 'detail' then t.elem else null end as detail_elem
+        child_elem
     from dimension_exploded d
     left join lateral (
-        select elem, 'child' as elem_type
+        select elem as child_elem
         from jsonb_array_elements(
             case when jsonb_typeof(d.dim_elem -> 'children')='array'
-            then d.dim_elem -> 'children' else '[]'::jsonb end
+            then d.dim_elem -> 'children'
+            else '[]'::jsonb
+            end
         ) elem
-        where jsonb_typeof(elem) = 'object'
-
-        union all
-
-        select elem, 'detail' as elem_type
-        from jsonb_array_elements(
-            case when jsonb_typeof(d.dim_elem -> 'details')='array'
-            then d.dim_elem -> 'details' else '[]'::jsonb end
-        ) elem
-        where jsonb_typeof(elem) = 'object'
+        where jsonb_typeof(elem)='object'
     ) t on true
 )
 
@@ -172,12 +163,8 @@ select
     child_elem ->> 'technical_name' as children_technical_name,
     child_elem ->> 'value' as children_value,
 
-    -- details
-    detail_elem ->> 'key'   as details_key,
-    detail_elem ->> 'value' as details_value,
-
     rollup_processed_at,
     created_at,
     record_inserted_at
 
-from children_and_details_exploded
+from children_exploded

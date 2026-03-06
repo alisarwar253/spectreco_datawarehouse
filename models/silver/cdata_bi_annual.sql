@@ -99,11 +99,11 @@ dimension_exploded as (
 
 ),
 
-children_details_exploded as (
+children_exploded as (
 
     select
         d.*,
-        elem as child_detail_elem
+        elem as child_elem
     from dimension_exploded d
     left join lateral (
         select elem
@@ -111,8 +111,6 @@ children_details_exploded as (
             case
                 when jsonb_typeof(d.dim_elem -> 'children') = 'array'
                     then d.dim_elem -> 'children'
-                when jsonb_typeof(d.dim_elem -> 'details') = 'array'
-                    then d.dim_elem -> 'details'
                 else '[]'::jsonb
             end
         ) elem
@@ -161,36 +159,11 @@ select
     dim_elem ->> 'currency'         as dimension_currency,
     dim_elem ->> 'emissions'        as dimension_emissions,
 
-    -- Children
-    case
-        when child_detail_elem ? 'technical_name'
-            then child_detail_elem ->> 'technical_name'
-        else null
-    end as children_technical_name,
-
-    case
-        when child_detail_elem ? 'technical_name'
-            and nullif(child_detail_elem ->> 'value','') ~ '^-?[0-9]+(\.[0-9]+)?$'
-            then (child_detail_elem ->> 'value')::numeric
-        else null
-    end as children_value,
-
-
-    -- Details
-    case
-        when child_detail_elem ? 'key'
-            then child_detail_elem ->> 'key'
-        else null
-    end as details_key,
-
-    case
-        when child_detail_elem ? 'key'
-            then child_detail_elem ->> 'value'
-        else null
-    end as details_value,
+    child_elem ->> 'technical_name' as children_technical_name,
+    child_elem ->> 'value' as children_value,
 
     rollup_processed_at,
     created_at,
     record_inserted_at
 
-from children_details_exploded
+from children_exploded
