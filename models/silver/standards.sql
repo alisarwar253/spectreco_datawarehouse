@@ -28,7 +28,7 @@ parsed as (
         _data ->> 'type' as type,
         _data ->> 'name' as name,
         _data ->> 'icon' as icon,
-        _data ->> 'no_of_employee' as no_of_employee,
+        _data ->> 'no_of_employee' as no_of_employees,
         business_size,
         jurisdictions,
         _data ->> 'description' as description,

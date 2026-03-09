@@ -101,28 +101,21 @@ dimension_exploded as (
     ) t on true
 ),
 
--- explode children and details together using lateral union
-children_details_exploded as (
+children_exploded as (
     select
         d.*,
-        cd.elem as child_detail_elem,
-        cd.elem_type
+        child_elem
     from dimension_exploded d
     left join lateral (
-        select elem, 'child' as elem_type
+        select elem as child_elem
         from jsonb_array_elements(
-            case when jsonb_typeof(d.dim_elem -> 'children')='array' then d.dim_elem -> 'children' else '[]'::jsonb end
+            case when jsonb_typeof(d.dim_elem -> 'children')='array'
+            then d.dim_elem -> 'children'
+            else '[]'::jsonb
+            end
         ) elem
         where jsonb_typeof(elem)='object'
-
-        union all
-
-        select elem, 'detail' as elem_type
-        from jsonb_array_elements(
-            case when jsonb_typeof(d.dim_elem -> 'details')='array' then d.dim_elem -> 'details' else '[]'::jsonb end
-        ) elem
-        where jsonb_typeof(elem)='object'
-    ) cd on true
+    ) t on true
 )
 
 select
@@ -168,17 +161,11 @@ select
     dim_elem ->> 'emissions'      as dimension_emissions,
     dim_elem ->> 'total_emissions' as dimension_total_emissions,
 
-    -- children
-    case when elem_type='child' then child_detail_elem ->> 'technical_name' end as children_technical_name,
-    case when elem_type='child' then coalesce(
-        child_detail_elem ->> 'value',
-        child_detail_elem ->> 'emission'
-    ) end as children_value,
-    case when elem_type='detail' then child_detail_elem ->> 'key' end as details_key,
-    case when elem_type='detail' then child_detail_elem ->> 'value' end as details_value,
+    child_elem ->> 'technical_name' as children_technical_name,
+    coalesce(child_elem ->> 'value', child_elem ->> 'emission') as children_value,
 
     rollup_processed_at,
     created_at,
     record_inserted_at
 
-from children_details_exploded
+from children_exploded
