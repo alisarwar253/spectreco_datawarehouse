@@ -79,48 +79,12 @@ base as (
             when jsonb_typeof(_data -> 'dimension') = 'array'
             then _data -> 'dimension'
             else '[]'::jsonb
-        end as dimension_array
+        end as dimensions
 
     from source
-),
-
--- explode dimension safely
-dimension_exploded as (
-
-    select
-        b.*,
-        dim_elem
-    from base b
-    left join lateral (
-        select elem as dim_elem
-        from jsonb_array_elements(b.dimension_array) elem
-        where jsonb_typeof(elem) = 'object'
-    ) t on true
-
-),
-
-children_exploded as (
-
-    select
-        d.*,
-        elem as child_elem
-    from dimension_exploded d
-    left join lateral (
-        select elem
-        from jsonb_array_elements(
-            case
-                when jsonb_typeof(d.dim_elem -> 'children') = 'array'
-                    then d.dim_elem -> 'children'
-                else '[]'::jsonb
-            end
-        ) elem
-        where jsonb_typeof(elem) = 'object'
-    ) t on true
-
 )
 
 select
-
     _id,
     company_code,
     internal_code_id,
@@ -149,21 +113,9 @@ select
     rollup_emissions,
     rollup_qty,
     rollup_value,
-
-    -- Dimension level (strings)
-    dim_elem ->> 'dimension'        as dimension_code,
-    dim_elem ->> 'value1'           as dimension_value1,
-    dim_elem ->> 'qty'              as dimension_qty,
-    dim_elem ->> 'value'            as dimension_value,
-    dim_elem ->> 'unit'             as dimension_unit,
-    dim_elem ->> 'currency'         as dimension_currency,
-    dim_elem ->> 'emissions'        as dimension_emissions,
-
-    child_elem ->> 'technical_name' as children_technical_name,
-    child_elem ->> 'value' as children_value,
-
+    dimensions,
     rollup_processed_at,
     created_at,
     record_inserted_at
 
-from children_exploded
+from base

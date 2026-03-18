@@ -55,41 +55,9 @@ base as (
             when jsonb_typeof(_data -> 'dimension') = 'array' 
             then _data -> 'dimension'
             else '[]'::jsonb
-        end as dimension_array
+        end as dimensions
 
     from source
-),
-
--- explode dimension array safely
-dimension_exploded as (
-    select
-        b.*,
-        dim_elem
-    from base b
-    left join lateral (
-        select elem as dim_elem
-        from jsonb_array_elements(b.dimension_array) elem
-        where jsonb_typeof(elem) = 'object'
-    ) t on true
-),
-
--- explode children array safely
-children_exploded as (
-    select
-        d.*,
-        child_elem
-    from dimension_exploded d
-    left join lateral (
-        select c as child_elem
-        from jsonb_array_elements(
-            case 
-                when jsonb_typeof(d.dim_elem -> 'children') = 'array' 
-                then d.dim_elem -> 'children'
-                else '[]'::jsonb
-            end
-        ) c
-        where jsonb_typeof(c) = 'object'
-    ) t on true
 )
 
 select
@@ -117,33 +85,9 @@ select
     total_emissions,
     url,
     is_aggregated,
-
-    -- Dimension level fields
-    (dim_elem -> '_id' ->> '$oid')          as dimension_id,
-    dim_elem ->> 'qty'                        as dimension_qty,
-    dim_elem ->> 'value'                      as dimension_value,
-    dim_elem ->> 'standard'                   as dimension_standard,
-    dim_elem ->> 'unit'                         as dimension_unit,
-    dim_elem ->> 'currency'                     as dimension_currency,
-    dim_elem ->> 'emission_unit'                as dimension_emission_unit,
-    dim_elem ->> 'dimension'                    as dimension_code,
-    dim_elem ->> 'dimension1'                   as dimension_1,
-    dim_elem ->> 'dimension2'                   as dimension_2,
-    dim_elem ->> 'dimension3'                   as dimension_3,
-    dim_elem ->> 'emissions'                    as dimension_emissions,
-    dim_elem ->> 'value1'                       as dimension_value1,
-    dim_elem ->> 'value2'                       as dimension_value2,
-    dim_elem ->> 'value3'                       as dimension_value3,
-    dim_elem ->> 'value4'                       as dimension_value4,
-    dim_elem ->> 'material'                     as dimension_material,
-    dim_elem ->> 'vehicle'                      as dimension_vehicle,
-    dim_elem ->> 'type'                         as dimension_type,
-
-    -- Children level fields (fully exploded)
-    child_elem ->> 'technical_name'         as children_technical_name,
-    child_elem ->> 'value'      as children_value,
+    dimensions,
     created_at,
     updated_at,
     record_inserted_at
 
-from children_exploded
+from base

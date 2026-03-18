@@ -63,40 +63,9 @@ base as (
             when jsonb_typeof(_data -> 'dimension') = 'array'
             then _data -> 'dimension'
             else '[]'::jsonb
-        end as dimension_array
+        end as dimensions
 
     from source
-),
-
--- explode dimension array safely
-dimension_exploded as (
-    select
-        b.*,
-        elem as dim_elem
-    from base b
-    left join lateral (
-        select elem
-        from jsonb_array_elements(b.dimension_array) elem
-        where jsonb_typeof(elem) = 'object'
-    ) t on true
-),
-
-children_exploded as (
-    select
-        d.*,
-        elem as child_elem
-    from dimension_exploded d
-    left join lateral (
-        select elem
-        from jsonb_array_elements(
-            case
-                when jsonb_typeof(d.dim_elem -> 'children') = 'array'
-                then d.dim_elem -> 'children'
-                else '[]'::jsonb
-            end
-        ) elem
-        where jsonb_typeof(elem)='object'
-    ) t on true
 )
 
 select
@@ -127,31 +96,9 @@ select
     rollup_emissions,
     rollup_qty,
     rollup_value,
-
-    -- Dimension level
-    dim_elem ->> 'dimension'        as dimension_code,
-    dim_elem ->> 'dimensions1'       as dimensions_1,
-    dim_elem ->> 'dimensions2'       as dimensions_2,
-    dim_elem ->> 'key'              as dimension_key,
-    dim_elem ->> 'value1'           as dimension_value1,
-    dim_elem ->> 'qty'              as dimension_qty,
-    dim_elem ->> 'value'            as dimension_value,
-    dim_elem ->> 'unit'             as dimension_unit,
-    dim_elem ->> 'currency'         as dimension_currency,
-    dim_elem ->> 'emissions'        as dimension_emissions,
-    dim_elem ->> 'material'         as dimension_material,
-    dim_elem ->> 'vehicle'          as dimension_vehicle,
-    dim_elem ->> 'lca_category'     as dimension_lca_category,
-
-    child_elem ->> 'technical_name' as children_technical_name,
-
-    coalesce(
-        child_elem ->> 'value',
-        child_elem ->> 'emission'
-    ) as children_value,
-
+    dimensions,
     rollup_processed_at,
     created_at,
     record_inserted_at
 
-from children_exploded
+from base
