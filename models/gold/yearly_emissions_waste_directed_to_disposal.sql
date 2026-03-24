@@ -14,9 +14,9 @@ with source as (
         rollup_emissions,
         dimensions
     from {{ ref('cdata_yearly') }}
-    where code like '01-0010-0050-%'
+    where code like '01-0050-0030-%'
     and code not in (
-        '01-0010-0050-002'
+        '01-0050-0030-001'
     )
 
 ),
@@ -61,7 +61,7 @@ final as (
                 'name', reporting_year,
                 'value', total_rollup_qty,
                 'emission', total_rollup_emissions,
-                'code', '01-0010-0010',
+                'code', '01-0050-0030',
 
                 'children', level_4_children
             )

@@ -14,15 +14,7 @@ with source as (
         rollup_emissions,
         dimensions
     from {{ ref('cdata_yearly') }}
-    where code like '01-0010-0030-%'
-    and code not in (
-        '01-0010-0030-001',
-        '01-0010-0030-002',
-        '01-0010-0030-018',
-        '01-0010-0030-019',
-        '01-0010-0030-020',
-        '01-0010-0030-021'
-    )
+    where code = '01-0060-0020-001'
 
 ),
 
@@ -38,13 +30,14 @@ aggregated as (
         -- JSON of contributing codes
         json_agg(
             json_build_object(
+                'name', code_name,
+                'value', rollup_qty,
+                'emissions', rollup_emissions,
                 'code', code,
-                'code_name', code_name,
-                'rollup_qty', rollup_qty,
-                'rollup_emissions', rollup_emissions,
-                'dimensions', dimensions
+                'level', 4,
+                'children', coalesce(dimensions, '[]'::jsonb)
             )
-        ) as dimensions_and_codes
+        ) as level_4_children
 
     from source
     group by
@@ -52,10 +45,34 @@ aggregated as (
         site_code,
         reporting_year
 
+),
+
+final as (
+        select
+        company_code,
+        site_code,
+        reporting_year,
+
+        json_agg(
+            json_build_object(
+                'name', reporting_year,
+                'value', total_rollup_qty,
+                'emission', total_rollup_emissions,
+                'code', '01-0060-0020',
+
+                'children', level_4_children
+            )
+        ) as actual_data    
+    from aggregated
+    group by
+    company_code,
+    site_code,
+    reporting_year
 )
 
+
 select *
-from aggregated
+from final
 order by
     company_code,
     site_code,
