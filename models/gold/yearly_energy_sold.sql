@@ -14,7 +14,12 @@ with source as (
         rollup_emissions,
         dimensions::jsonb as dimensions
     from {{ ref('cdata_yearly') }}
-    where code = '01-0010-0020-004'
+    where code in (
+        '01-0030-0010-017',
+        '01-0030-0010-018',
+        '01-0030-0010-019',
+        '01-0030-0010-020'
+    )
 
 ),
 
@@ -97,10 +102,10 @@ final as (
         json_agg(
             json_build_object(
                 'name', reporting_year,
-                'code_name', 'Scope 2 - Market Based Emissions',
+                'code_name', 'Total Energy Sold',
                 'value', total_value,
                 'emission', total_emission,
-                'code', '01-0010-0020-004',
+                'code', '01-0030-0010',
                 'year', reporting_year,
                 'children', children
             )
