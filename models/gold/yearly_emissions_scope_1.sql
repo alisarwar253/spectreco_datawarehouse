@@ -10,17 +10,39 @@ with source as (
         reporting_year,
         code,
         code_name,
-        rollup_qty,
+
+        -- 👇 qty only for original codes
+        case 
+            when code like '01-0010-0010-%' then rollup_qty
+            else 0
+        end as rollup_qty,
+
+        -- 👇 emissions for both original + new codes
         rollup_emissions,
+
         dimensions::jsonb as dimensions
+
     from {{ ref('cdata_yearly') }}
-    where code like '01-0010-0010-%'
-    and code not in (
-        '01-0010-0010-001',
-        '01-0010-0010-002',
-        '01-0010-0010-012'
-        '01-0010-0010-0100'
-    )
+
+    where 
+        (
+            -- original scope 1 codes
+            code like '01-0010-0010-%'
+            and code not in (
+                '01-0010-0010-001',
+                '01-0010-0010-002',
+                '01-0010-0010-012',
+                '01-0010-0010-0100'
+            )
+        )
+
+        -- 👇 NEW: include only these emission codes
+        OR code in (
+            '01-0030-0010-003',
+            '01-0030-0010-004',
+            '01-0030-0010-005',
+            '01-0030-0010-022'
+        )
 
 ),
 
@@ -38,7 +60,6 @@ normalized as (
         (
             select jsonb_agg(
                 jsonb_build_object(
-                    -- Parent level mappings
                     'name', coalesce(child->>'value1', child->>'name'),
                     'code_name', code_name,
                     'value', case when child->>'qty' ~ '^[0-9.]+$' then (child->>'qty')::numeric else null end,
@@ -47,7 +68,6 @@ normalized as (
                     'code', child->>'code',
                     'year', reporting_year,
 
-                    -- Children remain same, only rename technical_name → name
                     'children',
                         (
                             select jsonb_agg(
