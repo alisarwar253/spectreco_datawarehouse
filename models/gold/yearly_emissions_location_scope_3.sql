@@ -14,13 +14,7 @@ with source as (
         rollup_emissions,
         dimensions::jsonb as dimensions
     from {{ ref('cdata_yearly') }}
-    where code like '01-0010-0030-%'
-    and code not in (
-        '01-0010-0030-001',
-        '01-0010-0030-002',
-        '01-0010-0030-019',
-        '01-0010-0030-020'
-    )
+    where code = '01-0010-0030-019'
 
 ),
 
@@ -103,10 +97,10 @@ final as (
         json_agg(
             json_build_object(
                 'name', reporting_year,
-                'code_name', 'Scope 3 - emissions',
+                'code_name', 'Scope 3 - Location Based Emissions',
                 'value', total_value,
                 'emission', total_emission,
-                'code', '01-0010-0030',
+                'code', '01-0010-0030-019',
                 'year', reporting_year,
                 'children', children
             )

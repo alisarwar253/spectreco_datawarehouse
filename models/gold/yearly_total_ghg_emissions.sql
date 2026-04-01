@@ -48,7 +48,7 @@ select
     company_code,
     site_code,
     reporting_year,
-    sum(emissions) as total_emissions_all_scopes
+    sum(emissions) as total_ghg_emissions
 from combined
 group by
     company_code,
