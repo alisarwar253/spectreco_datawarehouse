@@ -96,7 +96,7 @@ final as (
                 'name', reporting_year,
                 'code_name', 'Water Withdrawal',
                 'value', total_value,
-                'code', '01-0060-0030',
+                'code', '01-0060-0030-001',
                 'year', reporting_year,
                 'children', children
             )

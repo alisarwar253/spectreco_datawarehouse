@@ -7,22 +7,23 @@ with scope1 as (
         company_code,
         site_code,
         reporting_year,
-        sum((elem->>'emission')::numeric) as emissions
+        'scope1' as scope,
+        (elem->>'emission')::numeric as emission,
+        (elem->>'value')::numeric as value
     from {{ ref('yearly_emissions_scope_1') }},
     lateral json_array_elements(actual_data) as elem
-    group by company_code, site_code, reporting_year
 ),
 
 scope2 as (
-    -- scope 2 stores emission in 'value' at the parent level (no 'emission' key)
     select
         company_code,
         site_code,
         reporting_year,
-        sum((elem->>'value')::numeric) as emissions
+        'scope2' as scope,
+        (elem->>'value')::numeric as emission,
+        null::numeric as value
     from {{ ref('yearly_emissions_energy_purchased_scope_2') }},
     lateral json_array_elements(actual_data) as elem
-    group by company_code, site_code, reporting_year
 ),
 
 scope3 as (
@@ -30,10 +31,11 @@ scope3 as (
         company_code,
         site_code,
         reporting_year,
-        sum((elem->>'emission')::numeric) as emissions
+        'scope3' as scope,
+        (elem->>'emission')::numeric as emission,
+        (elem->>'value')::numeric as value
     from {{ ref('yearly_emissions_scope_3') }},
     lateral json_array_elements(actual_data) as elem
-    group by company_code, site_code, reporting_year
 ),
 
 combined as (
@@ -42,18 +44,68 @@ combined as (
     select * from scope2
     union all
     select * from scope3
+),
+
+scope_level as (
+    select
+        company_code,
+        site_code,
+        reporting_year,
+        scope,
+
+        sum(emission) as scope_emission_sum,
+        sum(coalesce(value, 0)) as scope_value_sum,
+
+        jsonb_agg(
+            jsonb_strip_nulls(
+                jsonb_build_object(
+                    'emission', emission,
+                    'value', value
+                )
+            )
+        ) as raw_contributions
+
+    from combined
+    group by
+        company_code,
+        site_code,
+        reporting_year,
+        scope
+),
+
+final as (
+    select
+        company_code,
+        site_code,
+        reporting_year,
+
+        jsonb_build_object(
+            'total_emissions', sum(scope_emission_sum),
+            'total_value', sum(scope_value_sum),
+            'scopes',
+            jsonb_agg(
+                jsonb_build_object(
+                    'scope', scope,
+                    'emission_sum', scope_emission_sum,
+                    'value_sum', scope_value_sum,
+                    'contributions', raw_contributions
+                )
+            )
+        ) as actual_data
+
+    from scope_level
+    group by
+        company_code,
+        site_code,
+        reporting_year
 )
 
 select
     company_code,
     site_code,
     reporting_year,
-    sum(emissions) as total_ghg_emissions
-from combined
-group by
-    company_code,
-    site_code,
-    reporting_year
+    actual_data
+from final
 order by
     company_code,
     site_code,

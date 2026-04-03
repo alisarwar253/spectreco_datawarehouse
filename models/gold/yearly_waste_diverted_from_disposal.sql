@@ -14,7 +14,10 @@ with source as (
         rollup_emissions,
         dimensions::jsonb as dimensions
     from {{ ref('cdata_yearly') }}
-    where code = '01-0050-0040-001'
+    where code like '01-0050-0040-%'
+    and code not in (
+        '01-0050-0040-001'
+    )
 
 
 ),
