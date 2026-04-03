@@ -94,7 +94,7 @@ final as (
                 'name', reporting_year,
                 'code_name', 'Water Reduction Targets',
                 'value', total_value,
-                'code', '01-0060-0050',
+                'code', '01-0060-0050-001',
                 'year', reporting_year,
                 'children', children
             )

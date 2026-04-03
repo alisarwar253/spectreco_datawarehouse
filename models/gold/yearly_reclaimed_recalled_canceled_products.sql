@@ -98,7 +98,7 @@ final as (
                 'code_name', 'Reclaimed / Recalled / Canceled Products',
                 'value', total_value,
                 'emission', total_emission,
-                'code', '01-0040-0010',
+                'code', '01-0040-0010-004',
                 'year', reporting_year,
                 'children', children
             )

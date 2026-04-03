@@ -97,7 +97,7 @@ final as (
                 'name', reporting_year,
                 'code_name', 'Overall Water Consumption',
                 'value', total_value,
-                'code', '01-0060-0010',
+                'code', '01-0060-0010-001',
                 'year', reporting_year,
                 'children', children
             )

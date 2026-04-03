@@ -98,7 +98,7 @@ final as (
                 'code_name', 'Total Weight or Volume - Materials by Type',
                 'value', total_value,
                 'emission', total_emission,
-                'code', '01-0040-0010',
+                'code', '01-0040-0010-001',
                 'year', reporting_year,
                 'children', children
             )

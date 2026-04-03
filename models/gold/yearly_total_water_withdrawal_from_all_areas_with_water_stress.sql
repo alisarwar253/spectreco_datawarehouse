@@ -94,7 +94,7 @@ final as (
                 'name', reporting_year,
                 'code_name', 'Total Water Withdrawal from All Areas with Water Stress',
                 'value', total_value,
-                'code', '01-0060-0030',
+                'code', '01-0060-0030-003',
                 'year', reporting_year,
                 'children', children
             )
