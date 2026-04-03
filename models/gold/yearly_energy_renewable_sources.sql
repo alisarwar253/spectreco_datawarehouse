@@ -14,7 +14,15 @@ with source as (
         rollup_emissions,
         dimensions::jsonb as dimensions
     from {{ ref('cdata_yearly') }}
-    where code = '01-0060-0030-001'
+    where code in (
+        '01-0030-0010-006', 
+        '01-0030-0010-007', 
+        '01-0030-0010-008', 
+        '01-0030-0010-009',
+        '01-0030-0010-010',
+        '01-0030-0010-011',
+        '01-0030-0010-012'
+    )
 
 ),
 
@@ -32,15 +40,17 @@ normalized as (
         (
             select jsonb_agg(
                 jsonb_build_object(
-                    -- Parent level mappings
                     'name', coalesce(child->>'value1', child->>'name'),
                     'code_name', code_name,
-                    'value', case when child->>'qty' ~ '^[0-9.]+$' then (child->>'qty')::numeric else null end,
+                    'value', case 
+                                when child->>'qty' ~ '^[0-9.]+$' 
+                                then (child->>'qty')::numeric 
+                                else null 
+                             end,
                     'units', child->>'unit',
                     'code', child->>'code',
                     'year', reporting_year,
 
-                    -- Children remain same, only rename technical_name → name
                     'children',
                         (
                             select jsonb_agg(
@@ -94,9 +104,9 @@ final as (
         json_agg(
             json_build_object(
                 'name', reporting_year,
-                'code_name', 'Water Withdrawal',
+                'code_name', 'Energy - renewable sources',
                 'value', total_value,
-                'code', '01-0060-0030',
+                'code', '01-0030-0010-021',
                 'year', reporting_year,
                 'children', children
             )
