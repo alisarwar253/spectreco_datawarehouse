@@ -100,7 +100,7 @@ final as (
                 'code_name', 'Biodiversity State Changes - Area',
                 'value', total_value,
                 'emission', total_emission,
-                'code', '01-0020-0030',
+                'code', '01-0020-0030-005',
                 'year', reporting_year,
                 'children', children
             )

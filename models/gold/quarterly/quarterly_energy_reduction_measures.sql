@@ -8,13 +8,15 @@ with source as (
         company_code,
         site_code,
         reporting_year,
+        quarter,
+        months,
         code,
         code_name,
         rollup_qty,
         rollup_emissions,
         dimensions::jsonb as dimensions
-    from {{ ref('cdata_yearly') }}
-    where code = '01-0020-0020-005'
+    from {{ ref('cdata_quarter') }}
+    where code = '01-0030-0030-001'
 
 ),
 
@@ -24,6 +26,8 @@ normalized as (
         company_code,
         site_code,
         reporting_year,
+        quarter,
+        months,
         code,
         code_name,
         rollup_qty,
@@ -36,11 +40,11 @@ normalized as (
                     'name', coalesce(child->>'value1', child->>'name'),
                     'code_name', code_name,
                     'value', case when child->>'qty' ~ '^[0-9.]+$' then (child->>'qty')::numeric else null end,
-                    'emission', case when child->>'emissions' ~ '^[0-9.]+$' then (child->>'emissions')::numeric else null end,
                     'units', child->>'unit',
                     'code', child->>'code',
                     'year', reporting_year,
-
+                    'quarter', quarter,
+                    'months', months,
                     -- Children remain same, only rename technical_name → name
                     'children',
                         (
@@ -63,18 +67,19 @@ aggregated as (
         company_code,
         site_code,
         reporting_year,
-
+        quarter,
+        months,
         sum(rollup_qty::numeric) as total_value,
-        sum(rollup_emissions::numeric) as total_emission,
 
         json_agg(
             json_build_object(
                 'name', code_name,
                 'code_name', code_name,
                 'value', rollup_qty,
-                'emission', rollup_emissions,
                 'code', code,
                 'year', reporting_year,
+                'quarter', quarter,
+                'months', months,
                 'children', coalesce(normalized_dimensions, '[]'::jsonb)
             )
         ) as children
@@ -83,7 +88,9 @@ aggregated as (
     group by
         company_code,
         site_code,
-        reporting_year
+        reporting_year,
+        quarter,
+        months
 
 ),
 
@@ -93,15 +100,17 @@ final as (
         company_code,
         site_code,
         reporting_year,
-
+        quarter,
+        months,
         json_agg(
             json_build_object(
                 'name', reporting_year,
-                'code_name', 'Biodiversity - Habitats Protected',
+                'code_name', 'Energy Reduction Measures',
                 'value', total_value,
-                'emission', total_emission,
-                'code', '01-0020-0020-005',
+                'code', '01-0030-0030',
                 'year', reporting_year,
+                'quarter', quarter,
+                'months', months,
                 'children', children
             )
         ) as actual_data
@@ -110,7 +119,9 @@ final as (
     group by
         company_code,
         site_code,
-        reporting_year
+        reporting_year,
+        quarter,
+        months
 )
 
 select *
@@ -118,4 +129,6 @@ from final
 order by
     company_code,
     site_code,
-    reporting_year
+    reporting_year,
+    quarter,
+    months

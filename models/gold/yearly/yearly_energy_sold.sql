@@ -101,7 +101,7 @@ final as (
                 'name', reporting_year,
                 'code_name', 'Total Energy Sold',
                 'value', total_value,
-                'code', '01-0030-0010',
+                'code', '01-0030-0010-032',
                 'year', reporting_year,
                 'children', children
             )

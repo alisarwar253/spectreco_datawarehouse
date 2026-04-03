@@ -100,7 +100,7 @@ final as (
                 'code_name', 'Biodiversity - Habitats Restored',
                 'value', total_value,
                 'emission', total_emission,
-                'code', '01-0020-0020',
+                'code', '01-0020-0020-006',
                 'year', reporting_year,
                 'children', children
             )

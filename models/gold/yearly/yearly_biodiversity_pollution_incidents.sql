@@ -100,7 +100,7 @@ final as (
                 'code_name', 'Biodiversity - Pollution Incidents',
                 'value', total_value,
                 'emission', total_emission,
-                'code', '01-0020-0010',
+                'code', '01-0020-0010-003',
                 'year', reporting_year,
                 'children', children
             )
