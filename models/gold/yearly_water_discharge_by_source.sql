@@ -37,7 +37,6 @@ normalized as (
                     'name', coalesce(child->>'value1', child->>'name'),
                     'code_name', code_name,
                     'value', case when child->>'qty' ~ '^[0-9.]+$' then (child->>'qty')::numeric else null end,
-                    'emission', case when child->>'emissions' ~ '^[0-9.]+$' then (child->>'emissions')::numeric else null end,
                     'units', child->>'unit',
                     'code', child->>'code',
                     'year', reporting_year,
@@ -66,14 +65,12 @@ aggregated as (
         reporting_year,
 
         sum(rollup_qty::numeric) as total_value,
-        sum(rollup_emissions::numeric) as total_emission,
 
         json_agg(
             json_build_object(
                 'name', code_name,
                 'code_name', code_name,
                 'value', rollup_qty,
-                'emission', rollup_emissions,
                 'code', code,
                 'year', reporting_year,
                 'children', coalesce(normalized_dimensions, '[]'::jsonb)
@@ -100,7 +97,6 @@ final as (
                 'name', reporting_year,
                 'code_name', 'Water Discharge by Source',
                 'value', total_value,
-                'emission', total_emission,
                 'code', '01-0060-0020',
                 'year', reporting_year,
                 'children', children

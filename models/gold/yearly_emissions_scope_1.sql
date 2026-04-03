@@ -11,13 +11,11 @@ with source as (
         code,
         code_name,
 
-        -- 👇 qty only for original codes
         case 
             when code like '01-0010-0010-%' then rollup_qty
             else 0
         end as rollup_qty,
 
-        -- 👇 emissions for both original + new codes
         rollup_emissions,
 
         dimensions::jsonb as dimensions
@@ -26,7 +24,6 @@ with source as (
 
     where 
         (
-            -- original scope 1 codes
             code like '01-0010-0010-%'
             and code not in (
                 '01-0010-0010-001',
@@ -36,7 +33,6 @@ with source as (
             )
         )
 
-        -- 👇 NEW: include only these emission codes
         OR code in (
             '01-0030-0010-003',
             '01-0030-0010-004',

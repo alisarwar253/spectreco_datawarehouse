@@ -14,8 +14,7 @@ with source as (
         rollup_emissions,
         dimensions::jsonb as dimensions
     from {{ ref('cdata_yearly') }}
-    where code = '01-0060-0010-001'
-
+    where code = '01-0040-0020-001'
 
 ),
 
@@ -37,6 +36,7 @@ normalized as (
                     'name', coalesce(child->>'value1', child->>'name'),
                     'code_name', code_name,
                     'value', case when child->>'qty' ~ '^[0-9.]+$' then (child->>'qty')::numeric else null end,
+                    'emission', case when child->>'emissions' ~ '^[0-9.]+$' then (child->>'emissions')::numeric else null end,
                     'units', child->>'unit',
                     'code', child->>'code',
                     'year', reporting_year,
@@ -65,12 +65,14 @@ aggregated as (
         reporting_year,
 
         sum(rollup_qty::numeric) as total_value,
+        sum(rollup_emissions::numeric) as total_emission,
 
         json_agg(
             json_build_object(
                 'name', code_name,
                 'code_name', code_name,
                 'value', rollup_qty,
+                'emission', rollup_emissions,
                 'code', code,
                 'year', reporting_year,
                 'children', coalesce(normalized_dimensions, '[]'::jsonb)
@@ -95,9 +97,10 @@ final as (
         json_agg(
             json_build_object(
                 'name', reporting_year,
-                'code_name', 'Overall Water Consumption',
+                'code_name', 'Sourcing and Environmental Impacts of Feedstock Production',
                 'value', total_value,
-                'code', '01-0060-0010',
+                'emission', total_emission,
+                'code', '01-0040-0020',
                 'year', reporting_year,
                 'children', children
             )
