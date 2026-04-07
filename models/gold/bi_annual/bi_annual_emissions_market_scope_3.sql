@@ -77,6 +77,7 @@ aggregated as (
                 'emission', rollup_emissions,
                 'code', code,
                 'year', reporting_year,
+                'semester', semester,
                 'children', coalesce(normalized_dimensions, '[]'::jsonb)
             )
         ) as children
