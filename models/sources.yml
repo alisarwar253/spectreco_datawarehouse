@@ -2,7 +2,7 @@ version: 2
 
 sources:
   - name: mongo_raw
-    schema: spectreco_dev
+    schema: spectreco_data
     tables:
       - name: cdata
       - name: cdata_bi_annual
@@ -15,10 +15,10 @@ sources:
       - name: cdata_yearly_baseline
       - name: cdata_yearly_forecast
       - name: cdata_yearly_target
-      - name: companies
-      - name: company_sites
-      - name: company_codes
-      - name: standards
-      - name: standard_codes
-      - name: company_frameworks
-      - name: categories
+      # - name: companies
+      # - name: company_sites
+      # - name: company_codes
+      # - name: standards
+      # - name: standard_codes
+      # - name: company_frameworks
+      # - name: categories
