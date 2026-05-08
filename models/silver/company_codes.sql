@@ -19,9 +19,9 @@ parsed as (
         (_data -> 'site_code')::jsonb as site_code,
         (_data ->> 'isChecked')::boolean as is_checked,
         (_data ->> 'is_double')::boolean as is_double,
-        to_timestamp(((_data -> 'createdAt' ->> '$date')::bigint) / 1000) as created_at,
-        to_timestamp(((_data -> 'updatedAt' ->> '$date')::bigint) / 1000) as updated_at,
-        current_timestamp as record_inserted_at
+        created_at,
+        updated_at,
+        current_timestamp as record_processed_at
 
     from source
 

@@ -14,6 +14,8 @@ exploded as (
     select
         _id,
         _data,
+        created_at,
+        updated_at,
         jsonb_array_elements_text(_data -> 'jurisdiction') as jurisdictions,
         jsonb_array_elements_text(_data -> 'business_size') as business_size,
         jsonb_array_elements_text(_data -> 'industries') as industries
@@ -57,9 +59,9 @@ parsed as (
         _data ->> 'custom_2' as custom_2,
         _data ->> 'custom_3' as custom_3,
         _data ->> 'custom_4' as custom_4,
-        to_timestamp(((_data -> 'created_at' ->> '$date')::bigint) / 1000) as created_at,
-        to_timestamp(((_data -> 'updated_at' ->> '$date')::bigint) / 1000) as updated_at,
-        current_timestamp as record_inserted_at
+        created_at,
+        updated_at,
+        current_timestamp as record_processed_at
 
     from exploded
 

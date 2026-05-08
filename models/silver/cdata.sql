@@ -37,57 +37,19 @@ base as (
         _data ->> 'url' as url,
         (_data ->> 'is_aggregated')::boolean as is_aggregated,
 
-        case
-            when jsonb_typeof(_data -> 'createdAt' -> '$date') = 'number'
-                then to_timestamp(((_data -> 'createdAt' ->> '$date')::bigint) / 1000) at time zone 'UTC'
-            else (_data -> 'createdAt' ->> '$date')::timestamptz
-        end as created_at,
-
-        case
-            when jsonb_typeof(_data -> 'updatedAt' -> '$date') = 'number'
-                then to_timestamp(((_data -> 'updatedAt' ->> '$date')::bigint) / 1000) at time zone 'UTC'
-            else (_data -> 'updatedAt' ->> '$date')::timestamptz
-        end as updated_at,
-
-        current_timestamp as record_inserted_at,
         -- safe dimension array (empty array if missing or not an array)
         case 
             when jsonb_typeof(_data -> 'dimension') = 'array' 
             then _data -> 'dimension'
             else '[]'::jsonb
-        end as dimensions
+        end as dimensions,
+
+        created_at,
+        updated_at,
+        current_timestamp as record_processed_at
 
     from source
 )
 
-select
-    _id,
-    company_code,
-    company_name,
-    internal_code_id,
-    category_id,
-    standard_emissions,
-    standard_qty,
-    standard_unit,
-    site_code,
-    scope,
-    qty,
-    unit,
-    currency,
-    value,
-    month,
-    quarter,
-    semi_annual,
-    description,
-    parent_id,
-    type,
-    type_year,
-    total_emissions,
-    url,
-    is_aggregated,
-    dimensions,
-    created_at,
-    updated_at,
-    record_inserted_at
-
+select *
 from base

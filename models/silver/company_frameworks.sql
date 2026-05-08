@@ -14,6 +14,8 @@ exploded as (
     select
         _id,
         _data,
+        created_at,
+        updated_at,
         jsonb_array_elements_text(_data -> 'regulation') as regulation,
         jsonb_array_elements_text(_data -> 'standards') as standards,
         jsonb_array_elements_text(_data -> 'frameworks') as frameworks
@@ -29,9 +31,9 @@ parsed as (
         standards,
         frameworks,
         _data ->> 'company_code' as company_code,
-        to_timestamp(((_data -> 'createdAt' ->> '$date')::bigint) / 1000) as created_at,
-        to_timestamp(((_data -> 'updatedAt' ->> '$date')::bigint) / 1000) as updated_at,
-        current_timestamp as record_inserted_at
+        created_at,
+        updated_at,
+        current_timestamp as record_processed_at
 
     from exploded
 

@@ -40,7 +40,12 @@ base as (
         nullif(_data ->> 'rollup_qty','')::numeric       as rollup_qty,
         nullif(_data ->> 'rollup_value','')::numeric     as rollup_value,
 
-        -- rollup_processed_at safe handling like created_at
+        case
+            when jsonb_typeof(_data -> 'dimension') = 'array'
+            then _data -> 'dimension'
+            else '[]'::jsonb
+        end as dimensions,
+
         case
             when jsonb_typeof(_data -> 'rollup_processed_at') = 'string'
                 then (_data ->> 'rollup_processed_at')::timestamptz
@@ -49,56 +54,14 @@ base as (
             else null
         end as rollup_processed_at,
 
-        -- created_at safe handling
-        case
-            when jsonb_typeof(_data -> 'created_at' -> '$date') = 'number'
-                then to_timestamp(((_data -> 'created_at' ->> '$date')::bigint)/1000) at time zone 'UTC'
-            else (_data -> 'created_at' ->> '$date')::timestamptz
-        end as created_at,
+        created_at,
+        updated_at,
 
-        current_timestamp as record_inserted_at,
 
-        -- SAFE dimension array
-        case
-            when jsonb_typeof(_data -> 'dimension') = 'array'
-            then _data -> 'dimension'
-            else '[]'::jsonb
-        end as dimensions
+        current_timestamp as record_processed_at
 
     from source
 )
 
-select
-    _id,
-    company_code,
-    internal_code_id,
-    category_id,
-    month_index,
-    month,
-    reporting_year,
-    type_year,
-    qty,
-    standard_qty,
-    unit,
-    standard_unit,
-    value,
-    currency,
-    total_emissions,
-    standard_emissions,
-    site_code,
-    scope,
-    code,
-    code_name,
-    description,
-    ref_table,
-    is_forecast,
-    rollup_processed,
-    rollup_emissions,
-    rollup_qty,
-    rollup_value,
-    dimensions,
-    rollup_processed_at,
-    created_at,
-    record_inserted_at
-
+select *
 from base

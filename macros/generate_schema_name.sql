@@ -1,6 +1,6 @@
 {% macro generate_schema_name(custom_schema_name, node) %}
 
-    {% set auto_create_schemas = ['dw_stg', 'dw_silver', 'dw_gold'] %}
+    {% set auto_create_schemas = ['dw_stg', 'dw_silver', 'dw_gold', 'etl_control'] %}
 
     {% if custom_schema_name in auto_create_schemas %}
         {{ log("Creating schema if not exists: " ~ custom_schema_name, info=True) }}

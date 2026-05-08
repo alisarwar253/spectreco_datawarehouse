@@ -39,9 +39,9 @@ parsed as (
         _data ->> 'control' as control,
         to_timestamp(((_data -> 'construction_start_date' ->> '$date')::bigint) / 1000) as construction_start_date,
         to_timestamp(((_data -> 'commissioning_date' ->> '$date')::bigint) / 1000) as commissioning_date,
-        to_timestamp(((_data -> 'created_at' ->> '$date')::bigint) / 1000) as created_at,
-        to_timestamp(((_data -> 'updated_at' ->> '$date')::bigint) / 1000) as updated_at,
-        current_timestamp as record_inserted_at
+        created_at,
+        updated_at,
+        current_timestamp as record_processed_at
 
     from source
 

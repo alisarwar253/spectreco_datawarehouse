@@ -5,7 +5,11 @@ with source as (
 renamed as (
     select
         _id,
-        _doc::jsonb as _data
+        _doc::jsonb as _data,
+        {{ mongo_date("_doc::jsonb", "createdAt") }} as created_at,
+        {{ mongo_date("_doc::jsonb", "updatedAt") }} as updated_at,
+
+        current_timestamp as dbt_seen_at
     from source
 )
 

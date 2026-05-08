@@ -36,3 +36,7 @@ models:
     gold:
       +schema: dw_gold
       +materialized: materialized_view
+
+    etl_control:
+      +schema: etl_control
+      +materialized: view

@@ -37,11 +37,9 @@ parsed as (
         _data ->> 'emission_standard' as emission_standard,
         (_data ->> 'theme')::text as theme,
         (_data ->> 'incorporation_year')::text as incorporation_year,
-        to_timestamp(((_data -> 'created_at' ->> '$date')::bigint) / 1000) as created_at,
-        to_timestamp(((_data -> 'updated_at' ->> '$date')::bigint) / 1000) as updated_at,
-
-        current_timestamp as record_inserted_at
-
+        created_at,
+        updated_at,
+        current_timestamp as record_processed_at
     from source
 
 )
