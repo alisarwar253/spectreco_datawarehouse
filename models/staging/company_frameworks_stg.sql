@@ -9,7 +9,7 @@ renamed as (
         {{ mongo_date("_doc::jsonb", "createdAt") }} as created_at,
         {{ mongo_date("_doc::jsonb", "updatedAt") }} as updated_at,
 
-        current_timestamp as dbt_seen_at
+        current_timestamp as record_processed_at
     from source
 )
 
